@@ -1,0 +1,31 @@
+name: dart_express
+description: A new Flutter package project.
+version: 0.0.1
+author:
+homepage:
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  body_parser:
+  pedantic:
+  path:
+  hex:
+  
+  # shared_preferences:
+
+
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  test:
+  http:
+  build_cli: ^2.1.2
+
+  flutter_test:
+    sdk: flutter
+
+flutter:
