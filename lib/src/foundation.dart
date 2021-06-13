@@ -11,7 +11,7 @@ import 'package:dart_express/src/contenttype/enum.dart';
 import 'package:dart_express/src/loggers/loggy.dart';
 import 'package:dart_express/src/mime/mime_src/mime_multipart_transformer.dart';
 import 'package:dart_express/src/mime/mime_src/mime_shared.dart';
-import 'package:dart_express/src/session/sessions.dart';
+// import 'package:dart_express/src/session/sessions.dart';
 import 'package:dart_express/src/wrapper/cors.dart';
 import 'package:dart_express/src/wrapper/file.dart';
 import 'package:dart_express/src/wrapper/request.dart';
@@ -55,7 +55,7 @@ class Express {
 
   Router router = Router();
   Cors? cors;
-  Session? session;
+  // Session? session;
   int? port;
   var host;
   String response = '';

@@ -1,20 +1,17 @@
-name: dart_express
-description: A new Flutter package project.
-version: 0.0.1
-author:
-homepage:
+name: express_dt
+description: A Dart library to easily create http servers and perform requests.
+version: 1.0.0
+homepage: https://github.com/Phelickz/dart_exp
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
 
 dependencies:
-  body_parser:
-  pedantic:
-  path:
-  hex:
-  
-  # shared_preferences:
+  path: ^1.8.0
+  pedantic: ^1.11.0
+  stack_trace: ^1.10.0
+
 
 
   flutter:
