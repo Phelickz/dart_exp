@@ -1,6 +1,10 @@
-# dart_express
+# express_dt
+
+![Twitter Follow](https://img.shields.io/twitter/follow/FeolixaHope?style=social)
 
 A light weight library for building REST APIS easily with Dart.
+
+<code><img height="24" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/dart/dart.png"></code>
 
 The library is still a work in progress and open to contribution
 
@@ -10,7 +14,7 @@ Add the following to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  dart_express: any
+  express_dt: any
 ```
 
 ## Usage
@@ -19,9 +23,9 @@ dependencies:
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dart_express/dart_express.dart';
-import 'package:dart_express/src/model/get.dart';
-import 'package:dart_express/src/wrapper/cors.dart';
+import 'package:express_dt/express_dt.dart';
+import 'package:express_dt/src/model/get.dart';
+import 'package:express_dt/src/wrapper/cors.dart';
 import 'package:path/path.dart' as p;
 
 dynamic main() {

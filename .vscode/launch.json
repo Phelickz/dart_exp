@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "dart_express",
+            "name": "express_dt",
             "request": "launch",
             "type": "dart",
         },
         {
-            "name": "dart_express (profile mode)",
+            "name": "express_dt (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"

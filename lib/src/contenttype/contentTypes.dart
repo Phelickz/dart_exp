@@ -1,4 +1,4 @@
-import 'package:dart_express/src/contenttype/enum.dart';
+import 'package:express_dt/src/contenttype/enum.dart';
 
 ExpressContentType expressContent (String type) {
   var types = [

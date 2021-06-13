@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 
 // import 'package:mime/mime.dart';
-import 'package:dart_express/src/mime/mime_src/mime_type.dart';
+import 'package:express_dt/src/mime/mime_src/mime_type.dart';
 import 'package:path/path.dart';
 
 // Used for signal a directory redirecting, where a tailing slash is missing.
