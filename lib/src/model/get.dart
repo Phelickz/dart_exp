@@ -5,14 +5,14 @@ import '../../express_dt.dart';
 // import '../../express_dt.dart';
 
 class ExpressMethod {
-  //request route
+  ///request route
   String? route;
 
-  //Function to be initialized in the route. Leave it blank.
+  ///Function to be initialized in the route. Leave it blank.
   Map<String, List<Function(ExpressRequest req, ExpressResponse res)>>
       callback;
 
-  //lists of callback functions. Can be middlewares, or just one request function.
+  ///lists of callback functions. Can be middlewares, or just one request function.
   List<Function(ExpressRequest, ExpressResponse)>? callbacks;
 
   ExpressMethod({

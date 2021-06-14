@@ -8,6 +8,7 @@
             "name": "express_dt",
             "request": "launch",
             "type": "dart",
+            "program": "example/example.dart"
         },
         {
             "name": "express_dt (profile mode)",
@@ -15,5 +16,21 @@
             "type": "dart",
             "flutterMode": "profile"
         }
-    ]
+    ],
+    "saveAndRunExt": {
+        "commands": [
+            {
+                // "match": "\\.(css$|js$|html$)",
+                "match": ".dart$",
+                "isShellCommand": false,
+                "cmd": "workbench.action.debug.restart",
+                "isAsync": false
+            },
+            {
+                "match": ".dart$",
+                "isShellCommand": false,
+                "cmd": "dart.rerunLastTestDebugSession"
+            }
+        ]
+    }
 }

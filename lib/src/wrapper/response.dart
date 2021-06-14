@@ -20,11 +20,15 @@ class ExpressResponse {
     return this;
   }
 
-
-  ExpressResponse toJson(Map<dynamic, dynamic> data,{Function(dynamic)? encode}) {
+///Return Json data
+  ExpressResponse toJson(Map<dynamic, dynamic> data,
+      {Function(dynamic)? encode}) {
     response
       ..headers.contentType = ContentType.json
-      ..write(j.json.encode(data,toEncodable: encode??(dynamic obj)=>obj is DateTime?obj.toIso8601String():obj.toString()));
+      ..write(j.json.encode(data,
+          toEncodable: encode ??
+              (dynamic obj) =>
+                  obj is DateTime ? obj.toIso8601String() : obj.toString()));
 
     return this;
   }

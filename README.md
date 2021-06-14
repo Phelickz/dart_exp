@@ -77,6 +77,33 @@ dynamic main() {
       return res.statusCode(200).send('<h1>Hello World</h1>');
     },
   ]));
+
+  //route to create a jwt token
+  express.get(ExpressMethod(route: '/tokenRoute', callbacks: [
+    (req, res) {
+      String token = expressSign('Sjkbdjaksdjas', env['EXPRESS_SECRET_KEY']!);
+      return res.statusCode(200).toJson({"token": token});
+    }
+  ]));
+
+
+  //route with a middleware to verify jwt token
+  express.get(ExpressMethod(route: '/verifyToken', callbacks: [
+    (req, res) {
+      String? token = extractTokenFromHeader(req.headers);
+      if (token == null) {
+        return res.statusCode(400).send('Authorization Failed');
+      } else {
+        var data = expressVerify(token, env['EXPRESS_SECRET_KEY']!);
+        if (data == null) {
+          return res.statusCode(400).send('Authorization Failed');
+        }
+      }
+    },
+    (req, res) {
+      return res.statusCode(200).send('Authorized');
+    }
+  ]));
   
   //post request
 
@@ -158,6 +185,41 @@ Other available request types:
 - `PROFIND`
 - `VIEW`
 
+
+#### Secure routes
+```dart
+//route to create a jwt token
+  express.get(ExpressMethod(route: '/tokenRoute', callbacks: [
+    (req, res) {
+
+      //Use expressSign() to create a token with the id and your secret key
+      String token = expressSign('Sjkbdjaksdjas', env['EXPRESS_SECRET_KEY']!);
+      return res.statusCode(200).toJson({"token": token});
+    }
+  ]));
+
+
+  //route with a middleware to verify jwt token
+  express.get(ExpressMethod(route: '/verifyToken', callbacks: [
+    (req, res) {
+      //Extract token from header
+      String? token = extractTokenFromHeader(req.headers);
+      if (token == null) {
+        return res.statusCode(400).send('Authorization Failed');
+      } else {
+        //Verify the token
+        var data = expressVerify(token, env['EXPRESS_SECRET_KEY']!);
+        if (data == null) {
+          return res.statusCode(400).send('Authorization Failed');
+        }
+      }
+    },
+    //proceed to the request
+    (req, res) {
+      return res.statusCode(200).send('Authorized');
+    }
+  ]));
+```
 
 #### Working with html files
 

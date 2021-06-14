@@ -9,6 +9,7 @@ ExpressContentType expressContent (String type) {
     'application/javascript',
     'multipart/form-data'
 
+
   ];
   for (var t in types){
     if (t.toLowerCase() == type.toLowerCase() || type.toLowerCase().contains(t.toLowerCase())){

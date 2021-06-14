@@ -1,6 +1,6 @@
 name: express_dt
 description: A Dart library to easily create http servers and perform requests.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/Phelickz/dart_exp
 
 environment:
@@ -11,6 +11,8 @@ dependencies:
   path: ^1.8.0
   pedantic: ^1.11.0
   stack_trace: ^1.10.0
+  crypto: ^3.0.1
+  dotenv: ^3.0.0
 
 
 
