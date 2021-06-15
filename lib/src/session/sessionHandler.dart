@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:express_dt/express_dt.dart';
+import 'package:express_dt/src/logs/log.dart';
 import 'package:express_dt/src/session/cxt.dart' as ctx;
 import 'package:express_dt/src/session/io.dart';
 import 'package:express_dt/src/session/session.dart';
@@ -37,7 +38,7 @@ class JwtSession implements SessionManager {
     if (raw == null) return Session.newSession({});
     Map<String, String> values;
     try {
-      values = coder.decode(raw);
+      values = coder.decode(raw)!;
     } catch (e) {
       return Session.newSession({});
     }
@@ -47,9 +48,14 @@ class JwtSession implements SessionManager {
 
   /// Writes [response] with session details
   FutureOr<void> write(ExpressResponse? context, ExpressRequest? req) async {
-    if (req!.sessionNeedsUpdate) return null;
+    // if (req!.sessionNeedsUpdate) return null;
+    Message().logInfo(req!.sessionNeedsUpdate.toString());
 
+    // final Session? reqSes = await req!.session;
     final Session? session = await req.session;
-    io.write(context!, coder.encode(session!.asMap));
+    // Message().logInfo(reqSes!.id);
+
+    Message().logInfo(session!.id);
+    io.write(context!, coder.encode(session.asMap));
   }
 }

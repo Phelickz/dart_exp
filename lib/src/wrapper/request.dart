@@ -45,7 +45,7 @@ class ExpressRequest {
 
   String get type => req!.headers.contentType!.value;
 
- /// Returns cookies set in HTTP request.
+  /// Returns cookies set in HTTP request.
   Map<String, Cookie> get cookies => _cookies ??= _parseCookies();
 
   Map<String, Cookie>? _cookies;
@@ -58,8 +58,8 @@ class ExpressRequest {
     return ret;
   }
 
-    /// Does the session need update?
-  bool get sessionNeedsUpdate => _session != null && _session!.needsUpdate;
+  /// Does the session need update?
+  bool get sessionNeedsUpdate => _session == null && _session!.needsUpdate;
 
   /// The session for the given request.
   ///

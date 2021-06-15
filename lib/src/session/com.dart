@@ -72,15 +72,22 @@ class ExpressJwtMap implements MapCoder {
     return issueExpressToken(claimSet, config.hmacKey);
   }
 
-  Map<String, String> decode(String token) {
+  Map<String, String>? decode(String token) {
+    try {
+      print(config.hmacKey);
     final JwtExpress claimSet = verifyJwtHS256Signature(token, config.hmacKey);
 
     validate(claimSet);
 
     final ret = Map<String, String>.from(claimSet.payload);
-    ret[subjectKey] = claimSet.subject!;
+    // ret[subjectKey] = claimSet.subject!;
+    
     ret['sct'] = claimSet.issuedAt!.toUtc().millisecondsSinceEpoch.toString();
+    print(claimSet.jwtId);
     return ret;
+    } on JwtExpressException catch(e){
+      throw e;
+    }
   }
 }
 

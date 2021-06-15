@@ -43,8 +43,11 @@ class SessionIoCookie implements SessionIo {
 
     final cook = Cookie(cookieName, session);
     cook.path = cookiePath;
+    Message().logInfo(cook.toString());
+    // ctx.response.cookies.add(cook);
+    ctx.cookiess(cook);
 
-    ctx.response.cookies.add(cook);
+    Message().logInfo(ctx.response.cookies.toString());
   }
 }
 

@@ -17,3 +17,7 @@ Future<dynamic>? verifySession(ExpressRequest req, ExpressResponse res,
 
   return authId;
 }
+
+void verify1Session() async {
+// ExpressJwtMap().decode(token)/
+}

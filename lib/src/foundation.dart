@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:express_dt/express_dt.dart';
 import 'package:express_dt/src/session/expressSession.dart';
+import 'package:express_dt/src/session/ses.dart';
 import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 import 'package:express_dt/src/http_server/src/http_multipart_form_data.dart';
@@ -30,6 +31,8 @@ import 'session/sessionHandler.dart';
 
 class Express {
   static SessionManager? newsessionManager;
+
+  String? secretKey;
   final lgr = ExpressLoggy.initExpressLoggy(
     logPrinter: PrettyPrinter(showColors: true),
     logOptions: const LogOptions(
@@ -41,8 +44,8 @@ class Express {
     ],
   );
 
-  factory Express({SessionManager? sessionManager}) {
-    newsessionManager = sessionManager ?? ExpressSessionManager();
+  factory Express(/*{SessionManager? sessionManager}*/) {
+    // newsessionManager = sessionManager ?? ExpressSessionManager();
     return _express;
   }
 
@@ -71,20 +74,21 @@ class Express {
     }
   }
 
-  void onRestart() async {
+  void onRestart(int port) async {
     print('Server is restarting');
-    onClose();
+    // stream(port);
+    // onClose();
   }
 
   dynamic stream(int port,
       {Function? callback,
       SecurityContext? context,
-      String? messageReturn,
+      String? messageReturn = '',
       String? address,
       Function(Object e, StackTrace c)? errorHandler}) async {
     await runZonedGuarded(() async {
       Message().logDebug('Starting server..');
-      this.response = response;
+      this.response = messageReturn!;
       if (callback != null) {
         callback();
       }
@@ -107,6 +111,10 @@ class Express {
     }, (Object error, StackTrace stack) async {
       if (errorHandler == null) {
         Message().logError(error.toString());
+        // client!.close();
+        onClose();
+        // onRestart();
+
         // throw error;
       } else {
         throw errorHandler;
@@ -115,8 +123,68 @@ class Express {
   }
 
   dynamic onCall(HttpRequest request) async {
-    var req = ExpressRequest(request, manager: newsessionManager);
-    var res = ExpressResponse(request, manager: newsessionManager, req: req);
+    var req;
+    var res;
+    if (newsessionManager != null) {
+      JwtSession se = newsessionManager as JwtSession;
+      SessionIoCookie co = se.io as SessionIoCookie;
+      ExpressJwtMap coder = ExpressJwtMap(se.coder.config);
+      req = ExpressRequest(request, manager: newsessionManager);
+
+      bool contains = req.cookies.keys.contains(co.cookieName);
+      if (contains == true) {
+        print(req.cookies[co.cookieName]!.value);
+        try {
+          var data = coder.decode(req.cookies[co.cookieName]!.toString());
+          print(data);
+          // if (data == null) onClose();
+          res = ExpressResponse(
+            request,
+            cookie: req.cookies[co.cookieName]!,
+            manager: newsessionManager,
+            req: req,
+          );
+        } catch (e) {
+          Message().logError(e.toString());
+          res = ExpressResponse(
+            request,
+            // cookie: req.cookies[co.cookieName]!,
+            manager: newsessionManager,
+            req: req,
+          );
+          throw e;
+          // request.response.close();
+          // res.response.headers.set("Access-Control-Allow-Origin", "*");
+          // // res.set("Access-Control-Allow-Origin", "*");
+          // res.onClose(session: true);
+        }
+      } else {
+// print(contains);
+        Session session = await req.session;
+
+        session.clear();
+        // session.keys.contains('author')
+        session.add('authorization', 'authorizationId');
+        session.needsUpdate = false;
+        String cookie = coder.encode(session.asMap);
+        // coder.decode(token)
+        final cook = Cookie('express', cookie);
+
+        res = ExpressResponse(
+          request,
+          cookie: cook,
+          manager: newsessionManager,
+          req: req,
+        );
+      }
+    } else {
+      req = ExpressRequest(request, manager: ExpressSessionManager());
+      res = ExpressResponse(request, manager: ExpressSessionManager());
+    }
+
+    // ExpressJwtMap().encode(values)
+
+    // req.response.sessionManager.write(ctx, req)
 
     var contentType = req.headers.contentType.toString();
     var jsonData = {};
@@ -383,20 +451,18 @@ class Express {
 
   void _handleRequests(
       ExpressRequest req, ExpressResponse res, String reqType) async {
-    res.cookies.clear();
-    req.cookies.clear();
     // print(req.path);
-    Session ses = await req.session;
-    print(ses.id);
-    print(ses['authorization']);
-    var reqTypeMap = getAllRoutes[reqType];
-    // print(reqTypeMap);
-    // req.session.
-    // print(req.session);
-    // print(req.sessionManager);
+    // Session session = await req.session;
 
-    res.sessionManager!.write(res, req);
-    // req.cookies.addEntries(newEntries)
+    // session.clear();
+    // session.add('authorization', 'authorizationId');
+    // session.needsUpdate = false;
+
+    var reqTypeMap = getAllRoutes[reqType];
+
+    // print(session.id);
+
+    // res.sessionManager!.write(res, req);
 
     var path = req.path.endsWith('/')
         ? req.path.replaceRange(req.path.length - 1, req.path.length, '')
@@ -435,6 +501,7 @@ class Express {
           if (result.response.statusCode.toString().startsWith('2')) {
             Message()
                 .logInfo('Status: ${result.response.statusCode.toString()}');
+            // Message().logInfo(result.response.cookies.toString());
           } else {
             Message()
                 .logError('Status: ${result.response.statusCode.toString()}');
@@ -573,8 +640,11 @@ class Express {
   dynamic use(dynamic obj) {
     // Message().logInfo('Setting up server..');
     switch (obj.runtimeType) {
-      // case SessionManager:
-      // sessionManager.write(ctx)
+      case ExpressSessions:
+        ExpressSessions ses = obj;
+        secretKey = ses.secretKey;
+        newsessionManager = ses.sessionManager;
+        break;
 
       case ExpressDir:
         expressDirs.add(obj);

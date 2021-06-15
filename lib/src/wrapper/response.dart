@@ -1,3 +1,4 @@
+import 'package:express_dt/src/logs/log.dart';
 import 'package:universal_io/io.dart';
 import 'dart:convert' as j;
 
@@ -13,19 +14,27 @@ class ExpressResponse {
   HttpRequest? req;
   Session? _session;
   bool isClosed = false;
+
   Map<String, dynamic> locals = {};
-  ExpressResponse(HttpRequest request, {SessionManager? manager, ExpressRequest? req}) {
+
+  ExpressResponse(
+    HttpRequest request, {
+    SessionManager? manager,
+    ExpressRequest? req,
+    Cookie? cookie,
+  }) {
     this.req = request;
     this.express = req;
+    if (cookie != null) _cookies.add(cookie);
     this.sessionManager = manager;
   }
 
   /// Does the session need update?
   bool get sessionNeedsUpdate => _session != null && _session!.needsUpdate;
 
-
   Session get parsedSession => _session!;
-   Future<Session> get session async =>
+
+  Future<Session> get session async =>
       _session ??= await sessionManager!.parse(express!);
 
   HttpResponse get response => req!.response;
@@ -34,7 +43,19 @@ class ExpressResponse {
   get headers => req!.headers;
 
   /// Cookies
-  final List<Cookie> cookies = [];
+  final List<Cookie> _cookies = [];
+
+  /// Returns cookies set in HTTP request.
+  List<Cookie> get cookies => req!.cookies;
+
+  ExpressResponse cookiess(Cookie cookie) {
+    cookies.clear();
+    response.cookies.add(cookie);
+    print(response.cookies.toString());
+    // cookies.add(cookie);
+    // print(_cookies.toString());
+    return this;
+  }
 
   ExpressResponse statusCode(int statusCode) {
     response.statusCode = statusCode;
@@ -44,8 +65,13 @@ class ExpressResponse {
   ///Return Json data
   ExpressResponse toJson(Map<dynamic, dynamic> data,
       {Function(dynamic)? encode}) {
+    // Message().logInfo(response.cookies.toString());
+    // response
+    // ..cookies.addAll(cookies);
     response
       ..headers.contentType = ContentType.json
+      ..cookies.addAll(_cookies)
+      // ..cookies.addAll(response.cookies)
       ..write(j.json.encode(data,
           toEncodable: encode ??
               (dynamic obj) =>
@@ -81,7 +107,12 @@ class ExpressResponse {
   }
 
   /// Close Stream
-  ExpressResponse onClose() {
+  ExpressResponse onClose({bool? session}) {
+    if (session == true) {
+      response.statusCode = HttpStatus.unauthorized;
+      response.reasonPhrase = 'Unauthorized Session';
+    }
+
     response.close();
     isClosed = true;
     return this;
