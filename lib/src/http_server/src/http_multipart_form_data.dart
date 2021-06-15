@@ -6,9 +6,7 @@ library http_server.http_multipart_form_data;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
-
+import 'package:universal_io/io.dart';
 
 import 'package:express_dt/src/mime/mime.dart';
 

@@ -13,6 +13,7 @@ dependencies:
   stack_trace: ^1.10.0
   crypto: ^3.0.1
   dotenv: ^3.0.0
+  universal_io: ^2.0.4
 
 
 

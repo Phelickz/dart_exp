@@ -6,7 +6,7 @@ library http_server.virtual_directory;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 // import 'package:mime/mime.dart';
 import 'package:express_dt/src/mime/mime_src/mime_type.dart';

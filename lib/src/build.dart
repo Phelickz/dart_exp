@@ -34,8 +34,7 @@ dynamic buildMapFromUri(Map map, String body) {
       String key;
       key = Uri.decodeQueryComponent(keyValuePair.substring(0, equals));
       String value;
-      value =
-          Uri.decodeQueryComponent(keyValuePair.substring(equals + 1));
+      value = Uri.decodeQueryComponent(keyValuePair.substring(equals + 1));
 
       if (parseArrayRgx.hasMatch(key)) {
         Match queryMatch = parseArrayRgx.firstMatch(key)!;

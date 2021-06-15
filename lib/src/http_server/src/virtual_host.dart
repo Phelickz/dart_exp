@@ -5,7 +5,7 @@
 library http_server.virtual_host;
 
 import 'dart:async';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 /// The [VirtualHost] class is a utility class for handling multiple hosts on
 /// multiple sources, by using a named-based approach.

@@ -6,8 +6,7 @@ library http_server.http_body_impl;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
+import 'package:universal_io/io.dart';
 
 import 'package:express_dt/src/mime/mime_src/mime_multipart_transformer.dart';
 
@@ -95,7 +94,7 @@ class HttpBodyHandlerImpl {
       encoding ??= defaultEncoding;
       return encoding.decoder
           .bind(stream)
-          .fold(StringBuffer(), ( dynamic buffer, data) => buffer..write(data))
+          .fold(StringBuffer(), (dynamic buffer, data) => buffer..write(data))
           .then((buffer) => _HttpBody('text', buffer.toString()));
     }
 

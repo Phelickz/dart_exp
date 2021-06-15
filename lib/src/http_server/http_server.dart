@@ -5,7 +5,7 @@
 /// Here is a short example of how to serve all files from the current
 /// directory.
 ///
-/// 	import 'dart:io';
+/// 	import 'package:universal_io/io.dart';
 /// 	import 'dart:async';
 /// 	import 'package:http_server/http_server.dart';
 ///

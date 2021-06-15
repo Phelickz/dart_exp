@@ -147,7 +147,8 @@ class JwtExpress {
           if (a is String) {
             audienceList.add(a);
           } else {
-            throw JwtExpressException.invalidToken; // list contains a non-string value
+            throw JwtExpressException
+                .invalidToken; // list contains a non-string value
           }
         }
       } else {

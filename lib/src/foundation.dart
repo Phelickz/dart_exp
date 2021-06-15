@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:express_dt/express_dt.dart';
+import 'package:express_dt/src/session/expressSession.dart';
+import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 import 'package:express_dt/src/http_server/src/http_multipart_form_data.dart';
 // import 'package:get_server/get_server.dart' as gt;
@@ -24,8 +26,10 @@ import 'contenttype/contentTypes.dart';
 import 'logs/log.dart';
 import 'model/get.dart';
 import 'router/router.dart';
+import 'session/sessionHandler.dart';
 
 class Express {
+  static SessionManager? newsessionManager;
   final lgr = ExpressLoggy.initExpressLoggy(
     logPrinter: PrettyPrinter(showColors: true),
     logOptions: const LogOptions(
@@ -37,7 +41,8 @@ class Express {
     ],
   );
 
-  factory Express() {
+  factory Express({SessionManager? sessionManager}) {
+    newsessionManager = sessionManager ?? ExpressSessionManager();
     return _express;
   }
 
@@ -110,9 +115,8 @@ class Express {
   }
 
   dynamic onCall(HttpRequest request) async {
-    request.session.addAll({"state": "sessionId"});
-    var req = ExpressRequest(request);
-    var res = ExpressResponse(request);
+    var req = ExpressRequest(request, manager: newsessionManager);
+    var res = ExpressResponse(request, manager: newsessionManager, req: req);
 
     var contentType = req.headers.contentType.toString();
     var jsonData = {};
@@ -379,10 +383,20 @@ class Express {
 
   void _handleRequests(
       ExpressRequest req, ExpressResponse res, String reqType) async {
+    res.cookies.clear();
+    req.cookies.clear();
     // print(req.path);
+    Session ses = await req.session;
+    print(ses.id);
+    print(ses['authorization']);
     var reqTypeMap = getAllRoutes[reqType];
     // print(reqTypeMap);
-    // req.sessions!.clear();
+    // req.session.
+    // print(req.session);
+    // print(req.sessionManager);
+
+    res.sessionManager!.write(res, req);
+    // req.cookies.addEntries(newEntries)
 
     var path = req.path.endsWith('/')
         ? req.path.replaceRange(req.path.length - 1, req.path.length, '')
@@ -522,6 +536,7 @@ class Express {
   dynamic unlink(ExpressMethod routeData) {
     router.unlinks[routeData.route!] = routeData.callbacks!;
   }
+
   ///create a `purge` request, route: uri, callbacks: list of callback functions to run.
   dynamic purge(ExpressMethod routeData) {
     router.purges[routeData.route!] = routeData.callbacks!;
@@ -558,6 +573,9 @@ class Express {
   dynamic use(dynamic obj) {
     // Message().logInfo('Setting up server..');
     switch (obj.runtimeType) {
+      // case SessionManager:
+      // sessionManager.write(ctx)
+
       case ExpressDir:
         expressDirs.add(obj);
         break;
@@ -568,16 +586,14 @@ class Express {
 
       case Cors:
         cors = obj;
-        router.optionss
-            .addAll(router.gets.map((key, value) {
+        router.optionss.addAll(router.gets.map((key, value) {
           return MapEntry(key, [
             (ExpressRequest req, ExpressResponse res) {
               return res.statusCode(200);
             }
           ]);
         }));
-        router.optionss
-            .addAll(router.posts.map((key, value) {
+        router.optionss.addAll(router.posts.map((key, value) {
           return MapEntry(key, [
             (ExpressRequest req, ExpressResponse res) {
               res.response.headers.removeAll('Content-Type');

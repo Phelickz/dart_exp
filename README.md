@@ -20,7 +20,7 @@ dependencies:
 ## Usage
 ```dart
 
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:math';
 
 import 'package:express_dt/express_dt.dart';

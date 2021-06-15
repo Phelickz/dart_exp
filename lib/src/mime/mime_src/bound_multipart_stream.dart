@@ -67,7 +67,6 @@ class _MimeMultipart extends MimeMultipart {
     return _stream!.listen(onData,
         onDone: onDone, onError: onError, cancelOnError: cancelOnError);
   }
-
 }
 
 class BoundMultipartStream {

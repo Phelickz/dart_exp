@@ -95,8 +95,6 @@ class Router {
     views = routeData.callback;
   }
 
-
-
   // dynamic get(String route,
   //     List<Function(ExpressRequest req, ExpressResponse res)> callbacks) {
   //   gets[route] = callbacks;

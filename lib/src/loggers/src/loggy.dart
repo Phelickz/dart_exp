@@ -19,7 +19,8 @@ class ExpressLoggy<T extends ExpressLoggyType> {
   /// Singleton constructor. Calling `new ExpressLoggy(name)` will return the same
   /// actual instance whenever it is called with the same string name.
   factory ExpressLoggy(String name) =>
-      _loggers.putIfAbsent(name, () => ExpressLoggy<T>._named(name)) as ExpressLoggy<T>;
+      _loggers.putIfAbsent(name, () => ExpressLoggy<T>._named(name))
+          as ExpressLoggy<T>;
 
   /// Creates a new detached [ExpressLoggy].
   ///
@@ -50,10 +51,12 @@ class ExpressLoggy<T extends ExpressLoggyType> {
       _parent = ExpressLoggy(name.substring(0, dot));
       thisName = name.substring(dot + 1);
     }
-    return ExpressLoggy<T>._internal(thisName, _parent, <String, ExpressLoggy>{});
+    return ExpressLoggy<T>._internal(
+        thisName, _parent, <String, ExpressLoggy>{});
   }
 
-  ExpressLoggy._internal(this.name, this._parent, Map<String, ExpressLoggy> children)
+  ExpressLoggy._internal(
+      this.name, this._parent, Map<String, ExpressLoggy> children)
       : _children = children,
         children = UnmodifiableMapView(children) {
     if (_parent == null) {

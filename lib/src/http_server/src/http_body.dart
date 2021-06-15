@@ -6,7 +6,7 @@ library http_server.http_body;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 import 'http_body_impl.dart';
 

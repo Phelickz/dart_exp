@@ -1,26 +1,34 @@
 // import 'package:dart2_constant/html.dart';
 
 import 'dart:async';
-import 'dart:io';
+import 'package:express_dt/express_dt.dart';
+import 'package:express_dt/src/session/session.dart';
+import 'package:universal_io/io.dart';
 import 'dart:typed_data';
 
 import 'package:express_dt/src/wrapper/file.dart';
 
-class ExpressRequest implements HttpRequest{
+class ExpressRequest {
+  SessionManager? sessionManager;
   StreamController? stream;
   HttpRequest? req;
 
-  HttpSession? sessions;
+  ExpressResponse? response;
+
+  // HttpSession? sessions;
   Map<dynamic, dynamic> reqBody = {};
 
   Map<String, ExpressFile> files = {};
 
   List? currentExceptionList;
 
+  Session? _session;
+
   Map<dynamic, dynamic> params = {};
 
-  ExpressRequest(HttpRequest req) {
+  ExpressRequest(HttpRequest req, {SessionManager? manager}) {
     this.req = req;
+    this.sessionManager = manager;
   }
 
   Map get body => reqBody;
@@ -31,12 +39,40 @@ class ExpressRequest implements HttpRequest{
 
   String get path => req!.uri.path;
 
-  get session => req!.session;
+  Session get parsedSession => _session!;
 
   HttpHeaders get headers => req!.headers;
 
   String get type => req!.headers.contentType!.value;
 
+ /// Returns cookies set in HTTP request.
+  Map<String, Cookie> get cookies => _cookies ??= _parseCookies();
+
+  Map<String, Cookie>? _cookies;
+
+  Map<String, Cookie> _parseCookies() {
+    final ret = <String, Cookie>{};
+    for (Cookie cookie in req!.cookies) {
+      ret[cookie.name] = cookie;
+    }
+    return ret;
+  }
+
+    /// Does the session need update?
+  bool get sessionNeedsUpdate => _session != null && _session!.needsUpdate;
+
+  /// The session for the given request.
+  ///
+  /// Example:
+  ///
+  ///     server.get('/api/set/:item', (ctx) async {
+  ///       final Session session = await ctx.req.session;
+  ///       session['item'] = ctx.pathParams.item;
+  ///       // ...
+  ///     });
+
+  Future<Session> get session async =>
+      _session ??= await sessionManager!.parse(this);
 
   @override
   Future<bool> any(bool Function(Uint8List element) element) {
@@ -45,7 +81,9 @@ class ExpressRequest implements HttpRequest{
   }
 
   @override
-  Stream<Uint8List> asBroadcastStream({void Function(StreamSubscription<Uint8List>)? onCancel, void Function(StreamSubscription<Uint8List>)? onListen}) {
+  Stream<Uint8List> asBroadcastStream(
+      {void Function(StreamSubscription<Uint8List>)? onCancel,
+      void Function(StreamSubscription<Uint8List>)? onListen}) {
     // TODO: implement asBroadcastStream
     throw UnimplementedError();
   }
@@ -88,12 +126,12 @@ class ExpressRequest implements HttpRequest{
   // TODO: implement contentLength
   int get contentLength => req!.contentLength;
 
-  @override
-  // TODO: implement cookies
-  List<Cookie> get cookies => req!.cookies;
+  // @override
+  // // TODO: implement cookies
+  // List<Cookie> get cookies => req!.cookies;
 
   @override
-  Stream<Uint8List> distinct([bool Function(Uint8List, Uint8List)?element]) {
+  Stream<Uint8List> distinct([bool Function(Uint8List, Uint8List)? element]) {
     // TODO: implement distinct
     throw UnimplementedError();
   }
@@ -128,7 +166,8 @@ class ExpressRequest implements HttpRequest{
   Future<Uint8List> get first => req!.first;
 
   @override
-  Future<Uint8List> firstWhere(bool Function(Uint8List) element, {Uint8List Function()? orElse}) {
+  Future<Uint8List> firstWhere(bool Function(Uint8List) element,
+      {Uint8List Function()? orElse}) {
     // TODO: implement firstWhere
     throw UnimplementedError();
   }
@@ -147,7 +186,8 @@ class ExpressRequest implements HttpRequest{
   }
 
   @override
-  Stream<Uint8List> handleError(Function element, {bool Function(dynamic)? test}) {
+  Stream<Uint8List> handleError(Function element,
+      {bool Function(dynamic)? test}) {
     // TODO: implement handleError
     throw UnimplementedError();
   }
@@ -175,7 +215,8 @@ class ExpressRequest implements HttpRequest{
   Future<Uint8List> get last => req!.last;
 
   @override
-  Future<Uint8List> lastWhere(bool Function(Uint8List) element, {Uint8List Function()? orElse}) {
+  Future<Uint8List> lastWhere(bool Function(Uint8List) element,
+      {Uint8List Function()? orElse}) {
     // TODO: implement lastWhere
     throw UnimplementedError();
   }
@@ -185,7 +226,8 @@ class ExpressRequest implements HttpRequest{
   Future<int> get length => req!.length;
 
   @override
-  StreamSubscription<Uint8List> listen(void Function(Uint8List)? element, {bool? cancelOnError, void Function()? onDone, Function? onError}) {
+  StreamSubscription<Uint8List> listen(void Function(Uint8List)? element,
+      {bool? cancelOnError, void Function()? onDone, Function? onError}) {
     // TODO: implement listen
     // throw UnimplementedError();
     throw '';
@@ -216,7 +258,7 @@ class ExpressRequest implements HttpRequest{
   String get protocolVersion => req!.protocolVersion;
 
   @override
-  Future<Uint8List> reduce(Uint8List Function(Uint8List, Uint8List)element) {
+  Future<Uint8List> reduce(Uint8List Function(Uint8List, Uint8List) element) {
     // previous, Uint8List element) previou) {
     // TODO: implement reduce
     throw UnimplementedError();
@@ -226,9 +268,9 @@ class ExpressRequest implements HttpRequest{
   // TODO: implement requestedUri
   Uri get requestedUri => req!.requestedUri;
 
-  @override
-  // TODO: implement response
-  HttpResponse get response => req!.response;
+  // @override
+  // // TODO: implement response
+  // HttpResponse get response => req!.response;
 
   // @override
   // // TODO: implement session
@@ -239,7 +281,8 @@ class ExpressRequest implements HttpRequest{
   Future<Uint8List> get single => req!.single;
 
   @override
-  Future<Uint8List> singleWhere(bool Function(Uint8List) element, {Uint8List Function()? orElse}) {
+  Future<Uint8List> singleWhere(bool Function(Uint8List) element,
+      {Uint8List Function()? orElse}) {
     // TODO: implement singleWhere
     throw UnimplementedError();
   }
@@ -269,7 +312,8 @@ class ExpressRequest implements HttpRequest{
   }
 
   @override
-  Stream<Uint8List> timeout(Duration timeout, {void Function(EventSink<Uint8List>)? onTimeout}) {
+  Stream<Uint8List> timeout(Duration timeout,
+      {void Function(EventSink<Uint8List>)? onTimeout}) {
     // TODO: implement timeout
     throw UnimplementedError();
   }
@@ -290,7 +334,7 @@ class ExpressRequest implements HttpRequest{
   Stream<S> transform<S>(StreamTransformer<Uint8List, S> streamTransformer) {
     // print('Here');
     // throw UnimplementedError();
-    return streamTransformer.bind(this);
+    return streamTransformer.bind(this.req!);
   }
 
   @override
@@ -302,6 +346,4 @@ class ExpressRequest implements HttpRequest{
     // TODO: implement where
     throw UnimplementedError();
   }
-
- 
 }

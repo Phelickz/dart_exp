@@ -3,7 +3,7 @@ class ExpressException {
 
   ExpressException(this._exception);
 
-  static ExpressException from(List e){
+  static ExpressException from(List e) {
     return ExpressException(e);
   }
 
@@ -11,5 +11,4 @@ class ExpressException {
     print(_exception![1]);
     throw _exception![0];
   }
-
 }

@@ -1,6 +1,6 @@
 import 'package:express_dt/src/contenttype/enum.dart';
 
-ExpressContentType expressContent (String type) {
+ExpressContentType expressContent(String type) {
   var types = [
     'application/x-www-form-urlencoded',
     'text/plain',
@@ -8,15 +8,15 @@ ExpressContentType expressContent (String type) {
     'text/html',
     'application/javascript',
     'multipart/form-data'
-
-
   ];
-  for (var t in types){
-    if (t.toLowerCase() == type.toLowerCase() || type.toLowerCase().contains(t.toLowerCase())){
+  for (var t in types) {
+    if (t.toLowerCase() == type.toLowerCase() ||
+        type.toLowerCase().contains(t.toLowerCase())) {
       type = t;
       break;
     }
-  };
+  }
+  ;
   switch (type) {
     case 'application/x-www-form-urlencoded':
       return ExpressContentType.ApplicationFormUrlEncoded;

@@ -3,13 +3,14 @@ part of loggy;
 mixin NetworkExpressLoggy implements ExpressLoggyType {
   @override
   ExpressLoggy<NetworkExpressLoggy> get loggy =>
-      ExpressLoggy<NetworkExpressLoggy>('Network ExpressLoggy - ${runtimeType.toString()}');
+      ExpressLoggy<NetworkExpressLoggy>(
+          'Network ExpressLoggy - ${runtimeType.toString()}');
 }
 
 mixin UiExpressLoggy implements ExpressLoggyType {
   @override
-  ExpressLoggy<UiExpressLoggy> get loggy =>
-      ExpressLoggy<UiExpressLoggy>('UI ExpressLoggy - ${runtimeType.toString()}');
+  ExpressLoggy<UiExpressLoggy> get loggy => ExpressLoggy<UiExpressLoggy>(
+      'UI ExpressLoggy - ${runtimeType.toString()}');
 }
 
 mixin ExpressLogs implements ExpressLoggyType {

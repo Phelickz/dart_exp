@@ -5,7 +5,7 @@ library express_jwt;
 
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:io';
+import 'package:universal_io/io.dart';
 
 import 'package:crypto/crypto.dart';
 import 'package:express_dt/src/logs/log.dart';
@@ -47,13 +47,12 @@ String issueExpressToken(JwtExpress claimSet, String hmacKey) {
   return data + '.' + encSig;
 }
 
-
 /// Extracts the token from the header
-/// 
+///
 /// The Header has to be in the `Authorization`
-/// 
+///
 /// And the value has to be in the form `Bearer Token`
-/// 
+///
 /// If you have yours in another form, You'll have to do it manually
 String? extractTokenFromHeader(HttpHeaders headers) {
   String? value = headers.value('Authorization');

@@ -8,6 +8,8 @@ abstract class ExpressLoggyType {
 }
 
 extension ExpressLoggySpawner on ExpressLoggyType {
-  ExpressLoggy newExpressLoggy(String name) => ExpressLoggy('${loggy.fullName}.$name');
-  ExpressLoggy detachedExpressLoggy(String name, {LogPrinter? logPrinter}) => ExpressLoggy.detached(name)..printer = logPrinter;
+  ExpressLoggy newExpressLoggy(String name) =>
+      ExpressLoggy('${loggy.fullName}.$name');
+  ExpressLoggy detachedExpressLoggy(String name, {LogPrinter? logPrinter}) =>
+      ExpressLoggy.detached(name)..printer = logPrinter;
 }
