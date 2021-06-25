@@ -135,7 +135,7 @@ class Express {
       if (contains == true) {
         print(req.cookies[co.cookieName]!.value);
         try {
-          var data = coder.decode(req.cookies[co.cookieName]!.toString());
+          var data = coder.decode(req.cookies[co.cookieName]!.value.toString());
           print(data);
           // if (data == null) onClose();
           res = ExpressResponse(

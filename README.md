@@ -239,3 +239,117 @@ Other available request types:
   ]));
 
 ```
+
+#### Managing Sessions
+
+You can manage sessions in two ways.
+You can either let express_dt manage sessions for you or you can do it manually for weach route.
+If you let express_dt manage sessions for you, all routes are protected by the session, and the route fails when the session authorization fails. The session value is also encrypted using JWT and is stored in the user cookies.
+This method is not flexible or customizable. Atleast not yet.
+Here is an example.
+
+```Dart
+import 'dart:async';
+import 'dart:convert';
+import 'package:universal_io/io.dart';
+import 'dart:math';
+import 'package:express_dt/express_dt.dart';
+import 'package:path/path.dart' as p;
+import 'package:dotenv/dotenv.dart' show load, clean, isEveryDefined, env;
+
+dynamic main() {
+  load();
+   var config =
+      ExpressJwtConfig(env['EXPRESS_SECRET_KEY']!, issuer: 'express.com');
+
+  var expressSession =
+      JwtSession(config, io: SessionIoCookie(cookieName: 'express'));
+
+  var express = Express();
+
+    //let express know to serve from the /web directory
+  express.use(Express.static('example/web'));
+
+  //Allowe cross Origin requests
+  express.use(Cors(['*']));
+
+  //do this if you want all routes to be protected by session. Routes will fail with unauthorzed sessions.
+  express.use(ExpressSessions(env['EXPRESS_SECRET_KEY']!, expressSession));
+
+  //Manage sessions example
+  //This route creates a session automatically because we have told express to use EXPRESS SESSION above
+  express.post(ExpressMethod(route: '/sessions', callbacks: [
+    (req, res) async {
+      // print(res.cookies.toString());
+      return res.statusCode(200).toJson({'session': res.cookies.toString()});
+    }
+  ]));
+
+  //this route verifies session.
+//Request fails if the session is invalid
+
+  //Verify session
+  express.get(
+    ExpressMethod(
+      route: '/verify_sessions',
+      callbacks: [
+        (req, res) async {
+          Session session = await expressSession.parse(req);
+          print(session['authorization']);
+        }
+      ],
+    ),
+  );
+}
+```
+
+But if you are like me that wants flexibility and ofcourse, you might not want all your routes to be protected.. or you might want to handle your errors programmatically, then the manual way is the right way to go.
+
+```Dart
+import 'dart:async';
+import 'dart:convert';
+import 'package:universal_io/io.dart';
+import 'dart:math';
+import 'package:express_dt/express_dt.dart';
+import 'package:path/path.dart' as p;
+import 'package:dotenv/dotenv.dart' show load, clean, isEveryDefined, env;
+
+var express = Express();
+
+    //let express know to serve from the /web directory
+express.use(Express.static('example/web'));
+
+  //Allowe cross Origin requests
+express.use(Cors(['*']));
+
+  //post request
+//Handle session manually
+  express.post(ExpressMethod(route: '/post', callbacks: [
+    (ExpressRequest req, ExpressResponse res) async {
+//Handle session manually
+      final Session session = await req.session;
+      session.clear();
+      session['authorization'] = 'AuthorizationValue';
+      //save the value in the response cookie
+      res.cookiess(Cookie('authorization', 'AuthorizationValue'));
+      return res.statusCode(200).toJson({"sas": res.cookies});
+    }
+  ]));
+
+  //plain text
+//manually verify session
+  express.get(ExpressMethod(route: '/text', callbacks: [
+    (ExpressRequest req, ExpressResponse res) async {
+      //manually check session
+      print(req.cookies.toString());
+      Cookie? auth = req.cookies['authorization'];
+      if (auth == null || auth.value != 'AuthorizationValue') {
+        return res.statusCode(HttpStatus.unauthorized);
+      }
+
+      return res.statusCode(200).send('data');
+    }
+  ]));
+
+```
+In the upcoming releases, I'll work on the flexibility of the automatic sessions.
